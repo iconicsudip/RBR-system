@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>Room Seeker</title>
+</head>
+<style>
+    .card-body {
+        text-align: center;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <header
+            class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+
+            <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="{%url 'home'%}" class="nav-link px-2 link-secondary">Home</a></li>
+                <li><a href="/manager_dashboard/{{request.user}}" class="nav-link px-2 link-dark">Dashboard</a></li>
+                <li><a href="#" class="nav-link px-2 link-dark">Customer Bookings</a></li>
+            </ul>
+            {% if user.is_authenticated %}
+            <div class="col-md-3 text-end">
+                {{ user.username }}
+                <a class="btn btn-warning" href="{% url 'logout'%}" role="button">Log-out</a>
+            </div>
+            {%else %}
+            <div class="col-md-3 text-end">
+                <p style="margin: 0;">Log-In / Register</p>
+            </div>
+            {% endif %}
+
+        </header>
+    </div>
+    <!-- Button trigger modal -->
+    <div class="container mb-4 mt-4" style="display: flex;text-align: center;">
+        <div class="container">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal3">
+                Edit Time Range
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel3"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel3">EDIT TIME RANGE</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="row g-3" action="{% url 'slotrange'%}" method="POST" style="text-align: initial;">
+                                {%csrf_token%}
+                                <div class="form-group mb-2 col-md-10">
+                                    <label for="inputAddress">Slot Delay</label>
+                                    <input value="{{slot_range.slotrange}}" name="slotdelay" type="number" class="form-control" id="inputAddress"
+                                        placeholder="Slot delay">
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="inputAddress"></label>
+                                    {% if slot_range.slotrange == 1 %}
+                                        <input type="text"  value="hr" class="form-control" id="inputZip" disabled>
+                                    {%else%}
+                                        <input type="text"  value="hrs" class="form-control" id="inputZip" disabled>
+                                    {%endif%}
+                                </div>
+                                <div class="form-group mb-2 col-md-10">
+                                    <label for="inputAddress">Book Before</label>
+                                    <input value="{{slot_range.bookbefore}}" name="bookbefore" type="number" class="form-control" id="inputAddress"
+                                        placeholder="Book Before">
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="inputAddress"></label>
+                                    {% if slot_range.bookbefore == 1 %}
+                                        <input type="text"  value="day" class="form-control" id="inputZip" disabled>
+                                    {%else%}
+                                        <input type="text"  value="days" class="form-control" id="inputZip" disabled>
+                                    {%endif%}
+                                </div>
+                                <button type="submit" class="btn btn-success">Save Range</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                Add Room Type
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel1"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel1">ADD ROOM TYPE</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="row g-3" action="{% url 'addroomtype'%}" method="POST" style="text-align: initial;">
+                                {%csrf_token%}
+                                <div class="form-group mb-2">
+                                    <label for="inputAddress">Room Type</label>
+                                    <input name="roomtype" type="text" class="form-control" id="inputAddress"
+                                        placeholder="Type">
+                                </div>
+                                <button type="submit" class="btn btn-success">Add Room Type</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+                Add New Room
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel2">ADD ROOM</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="row g-3" action="{% url 'addroom'%}" method="POST" style="text-align: initial;">
+                                {%csrf_token%}
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="roomtype">Room Type : </label>
+                                        <select name="roomtype" id="roomtype" class="form-control">
+                                            <option selected>Choose Room Type...</option>
+                                            {% for type in alltypes %}
+                                                <option value="{{type}}">{{ type }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="capacity">Capacity :</label>
+                                        <input name="capacity" type="number" class="form-control" id="capacity" placeholder="capacity">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="price">Price :</label>
+                                    <input name="price" type="number" class="form-control" id="price" placeholder="Price">
+                                </div>
+                                <div class="form-group">
+                                    <label for="status">Status : </label>
+                                    <select name="status" id="status" class="form-control">
+                                        <option selected>Room Status...</option>
+                                        <option>Available</option>
+                                        <option>Not Available</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="form-group">
+                                        <label for="location">Location : </label>
+                                        <select name="location" id="location" class="form-control">
+                                            <option selected>Choose any location...</option>
+                                            {% for l in alllocations%}
+                                                <option value="{{l}}">{{l}}</option>
+                                            {%endfor%}
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success">Add Room</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Add New Location
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">ADD LOCATION</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="row g-3" action="{% url 'addlocation'%}" method="POST" style="text-align: initial;">
+                                {%csrf_token%}
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="city">City :</label>
+                                        <input name="city" type="text" class="form-control" id="city"
+                                            placeholder="City">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="state">State :</label>
+                                    <input name="state" type="text" class="form-control" id="state" placeholder="State">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="country">Country :</label>
+                                    <input name="country" type="text" class="form-control" id="country"
+                                        placeholder="Country">
+                                </div>
+                                <button type="submit" class="btn btn-success">Add Location</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" style="text-align: center;">
+        <h1>Room Details</h1>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Room number</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Capacity</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Act Edit</th>
+                    <th scope="col">Act Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in rooms %}
+                    {% if r.status == 'Available' %}
+                        <tr class="table-success">
+                            <th scope="row">{{forloop.counter}}</th>
+                            <td>{{r.roomtype}}</td>
+                            <td>{{r.status}}</td>
+                            <td>&#8377 {{r.price}}</td>
+                            <td>{{r.capacity}}</td>
+                            <td>{{r.location}}</td>
+                            <td><a name="" id="" class="btn btn-warning" href="/roomedit/{{request.user}}/{{r.id}}" role="button">Edit</a></td>
+                            <td><a name="{{r.id}}" id="" class="btn btn-danger" href="/roomdelete/{{r.id}}" role="button">Delete</a></td>
+                        </tr>
+                    {%else%}
+                        <tr class="table-danger">
+                            <th scope="row">{{forloop.counter}}</th>
+                            <td>{{r.roomtype}}</td>
+                            <td>{{r.status}}</td>
+                            <td>&#8377 {{r.price}}</td>
+                            <td>{{r.capacity}}</td>
+                            <td>{{r.location}}</td>
+                            <td><a name="" id="" class="btn btn-warning" href="/roomedit/{{request.user}}/{{r.id}}" role="button">Edit</a></td>
+                            <td><a name="{{r.id}}" id="" class="btn btn-danger" href="/roomdelete/{{r.id}}" role="button">Delete</a></td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
