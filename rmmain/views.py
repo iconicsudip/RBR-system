@@ -1,5 +1,5 @@
 
-from itertools import count
+import json
 from urllib.robotparser import RequestRate
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
@@ -24,6 +24,30 @@ def home(request):
             return render(request,"home.html",context)
     else:
         return render(request,"home.html")
+
+def search(request):
+    if request.user.is_authenticated:
+        if(request.method == "POST"):
+            if(request.POST['location']):
+                try:
+                    l = Location.objects.get(city =str(request.POST['location']).capitalize())
+                    location = Room.objects.filter(location = l)
+                    print(location)
+                    all_location = ""
+                    for i in location:
+                        all_location+=str(str(i.id)+" "+str(i.manager) +" " +str(i.roomtype) + " "+ str(i.capacity)+" " +str(i.price)+" " +str(i.location)+" " +str(i.status))
+                        all_location+=" "
+                    return redirect('customer_dashboard',user=request.user,location=all_location)
+                except:
+                    messages.error(request,"Rooms are not present in this location")
+                    return redirect('customer_dashboard',user=request.user)
+            else:
+                messages.error(request,"Empty fields.")
+                return redirect('customer_dashboard',user=request.user)
+        else:
+            return redirect('customer_dashboard',user=request.user)
+    else:
+        return redirect('customer_login')
 
 def slotrange(request):
     if request.user.is_authenticated:
@@ -123,6 +147,11 @@ def addroom(request):
                 location = Location.objects.get(city=location)
             )
             room.save()
+            timing = Timing(
+                manager = Manager.objects.get(username = request.user),
+                roomid = Room.objects.latest('id')
+            )
+            timing.save()
             return redirect('manager_dashboard',user=request.user)
         else:
             messages.error(request,"Empty fields.")
@@ -132,9 +161,10 @@ def addroom(request):
 def addlocation(request):
     if(request.method == "POST"):
         if(request.POST['city'] and request.POST['state'] and request.POST['country']):
-            city = request.POST['city']
-            state = request.POST['state']
-            country = request.POST['country']
+            city = str(request.POST['city']).capitalize()
+            state = str(request.POST['state']).capitalize()
+            country = str(request.POST['country']).capitalize()
+            print(city,state,country)
             check_state = [x[0] for x in Location.objects.filter(country=country).values_list('state').all()]
             if(state in list(check_state)):
                 #print(list(check_state))
@@ -188,13 +218,32 @@ def logout(request):
     return redirect('/')
 
 @login_required(login_url='customer_login')
-def customer_dashboard(request,user):
+def customer_dashboard(request,user,location=None):
     if request.user.is_authenticated:
         one = Customer.objects.filter(username=request.user).values_list('email',flat=True).first()
         print(one)
         two = User.objects.filter(username=user).values_list('email',flat=True).first()
         if one == two:
-            return render(request,'customer_dashboard.html')
+            final_rooms = []
+            if(location!=None):
+                all_rooms = location.split(" ")
+                for i in range(len(all_rooms)):
+                    try:
+                        if(all_rooms[i]>='0'):
+                            all_rooms[i] = int(all_rooms[i])
+                    except:
+                        continue
+                temp = []
+                for i in range(len(all_rooms[:len(all_rooms)-1])):
+                    if(i!=0 and i%7==0):
+                        final_rooms.append(temp)
+                        temp = []
+                    temp.append(all_rooms[i])
+                print(final_rooms)
+            context = {
+                'allrooms':final_rooms
+            }
+            return render(request,'customer_dashboard.html',context)
         else:
             auth.logout(request)
             return redirect('home')

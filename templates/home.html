@@ -27,7 +27,7 @@
                     {% if ismanager == 'Manager' %}
                         <li><a href="/manager_dashboard/{{request.user}}" class="nav-link px-2 link-dark">Manager Dashboard</a></li>
                     {% elif iscustomer == 'Customer' %}
-                        <li><a href="/customer_dashboard/{{request.user}}" class="nav-link px-2 link-dark">Customer Dashboard</a></li>
+                        <li><a href="/customer_dashboard/{{request.user}}/" class="nav-link px-2 link-dark">Customer Dashboard</a></li>
                     {%endif%}
                 {%endif%}
                 <li><a href="#" class="nav-link px-2 link-dark">Pricing</a></li>

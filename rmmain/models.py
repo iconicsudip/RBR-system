@@ -34,10 +34,8 @@ class Room(models.Model):
     status = models.CharField(max_length=10000,blank=False)
     location = models.ForeignKey(Location,on_delete=models.CASCADE)
     def __str__(self):
-        s = "[ {} , {}".format(self.id,self.roomtype)
-        s1 = " , {} , {} ".format(self.price,self.status)
-
-        return s+s1 +", "+str(self.location)+ " ]"
+        s = "{}".format(self.id)
+        return s
     
 class Slotdelay(models.Model):
     manager = models.OneToOneField(Manager,on_delete=models.CASCADE)
