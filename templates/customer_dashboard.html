@@ -129,31 +129,46 @@
 
         <div class="container">
             {% for room in allrooms %}
-            <div class="row p-2 bg-white border rounded mb-4">
+            <div class="row p-2 bg-white border rounded mb-4" style="align-items: center;text-align: initial;">
                 <div class="col-md-3 mt-1"><img class="img-fluid img-responsive rounded product-image"
                         src="https://source.unsplash.com/random/600x300/?room"></div>
                 <div class="col-md-6 mt-1">
-                    <h5>Quant olap shirts</h5>
-                    <div class="d-flex flex-row">
+                    <h5>Room No.{{forloop.counter}}</h5>
+                    <!-- <div class="d-flex flex-row">
                         <div class="ratings mr-2"><i class="fa fa-star"></i><i class="fa fa-star"></i><i
                                 class="fa fa-star"></i><i class="fa fa-star"></i></div><span>310</span>
+                    </div> -->
+                    <div class="mt-1 mb-1 spec-1">
+                        <span>Manager = {{room.manager}} (Phno. {{room.mnumber}})</span>
+                        <div class="mt-1 mb-1 spec-1">
+                            <span class="dot"></span><span>Type = {{room.roomtype}}</span>
+                        </div>
+                        <div class="mt-1 mb-1 spec-1">
+                            <span class="dot"></span><span>Capacity = {{room.capacity}} {% if room.capacity == 1%}person{%else%}people{%endif%}</span>
+                        </div>
+                        <div class="mt-1 mb-1 spec-1">
+                            <span class="dot"></span><span>Location = {{room.location}}<br></span>
+                        </div>
                     </div>
-                    <div class="mt-1 mb-1 spec-1"><span>100% cotton</span><span class="dot"></span><span>Light
-                            weight</span><span class="dot"></span><span>Best finish<br></span></div>
-                    <div class="mt-1 mb-1 spec-1"><span>Unique design</span><span class="dot"></span><span>For
-                            men</span><span class="dot"></span><span>Casual<br></span></div>
-                    <p class="text-justify text-truncate para mb-0">There are many variations of passages of Lorem Ipsum
-                        available, but the majority have suffered alteration in some form, by injected humour, or
-                        randomised words which don't look even slightly believable.<br><br></p>
+                    <p class="text-justify text-truncate para mb-0">Address = {{room.address}}<br><br></p>
                 </div>
                 <div class="align-items-center align-content-center col-md-3 border-left mt-1">
                     <div class="d-flex flex-row align-items-center">
-                        <h4 class="mr-1">&#8377 {{room.3}}</h4>
+                        <h4 class="mr-1">&#8377 {{room.price}}/day</h4>
                     </div>
-                    <h6 class="text-success">Free shipping</h6>
-                    <div class="d-flex flex-column mt-4"><button class="btn btn-primary btn-sm"
-                            type="button">Details</button><button class="btn btn-outline-primary btn-sm mt-2"
-                            type="button">Add to wishlist</button></div>
+                    {%if room.status == 'Available'%}
+                        <h6 class="text-success">{{room.status}}</h6>
+                        <div class="d-flex flex-column mt-4">
+                            <button class="btn btn-success btn-sm" type="button" >Book Now</button>
+                            <button class="btn btn-outline-warning btn-sm mt-2" type="button">Add to wishlist</button>
+                        </div>
+                    {%else%}
+                    <h6 class="text-danger">{{room.status}}</h6>
+                    <div class="d-flex flex-column mt-4">
+                        <button class="btn btn-alert btn-sm" type="button" disabled>Book Now</button>
+                        <button class="btn btn-outline-warning btn-sm mt-2" type="button">Add to wishlist</button>
+                    </div>
+                    {%endif%}
                 </div>
             </div>
             {% endfor %}

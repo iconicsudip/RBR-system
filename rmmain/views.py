@@ -33,11 +33,14 @@ def search(request):
                     l = Location.objects.get(city =str(request.POST['location']).capitalize())
                     location = Room.objects.filter(location = l)
                     print(location)
-                    all_location = ""
-                    for i in location:
-                        all_location+=str(str(i.id)+" "+str(i.manager) +" " +str(i.roomtype) + " "+ str(i.capacity)+" " +str(i.price)+" " +str(i.location)+" " +str(i.status))
-                        all_location+=" "
-                    return redirect('customer_dashboard',user=request.user,location=all_location)
+                    if(len(location)>0):
+                        context = {
+                            'allrooms':location
+                        }
+                        return render(request,'customer_dashboard.html',context)
+                    else:
+                        messages.error(request,"Rooms are not present in this location")
+                        return redirect('customer_dashboard',user=request.user)
                 except:
                     messages.error(request,"Rooms are not present in this location")
                     return redirect('customer_dashboard',user=request.user)
@@ -70,13 +73,14 @@ def slotrange(request):
 def roomedit(request,user,id):
     if request.user.is_authenticated:
         if(request.method == "POST"):
-            if(request.POST.get('eroomtype') and request.POST['ecapacity'] and request.POST['eprice'] and request.POST.get('estatus') and request.POST.get('elocation')):
+            if(request.POST.get('eroomtype') and request.POST['ecapacity'] and request.POST['eprice'] and request.POST.get('estatus') and request.POST.get('elocation') and request.POST['eaddress']):
                 new_data = Room.objects.get(pk=id)
                 new_data.roomtype = Roomtype.objects.get(roomtype=request.POST.get('eroomtype'))
                 new_data.capacity = request.POST['ecapacity']
                 new_data.price = request.POST['eprice']
                 new_data.status = request.POST.get('estatus')
                 new_data.location = Location.objects.get(city=request.POST.get('elocation'))
+                new_data.address = request.POST['eaddress']
                 new_data.save()
                 new_time = Timing.objects.get(roomid = id)
                 new_time.smonday = request.POST.get('smonday')
@@ -131,20 +135,24 @@ def roomdelete(request,id):
     return redirect('manager_dashboard',user=request.user)
 def addroom(request):
     if(request.method == 'POST'):
-        if(request.POST.get('roomtype') and request.POST['capacity'] and request.POST['price'] and request.POST.get('status') and request.POST.get('location')):
+        if(request.POST.get('roomtype') and request.POST['capacity'] and request.POST['price'] and request.POST.get('status') and request.POST.get('location') and request.POST['address']):
             roomtype = request.POST.get('roomtype')
             capacity = request.POST['capacity']
             price = request.POST['price']
             status = request.POST.get('status')
             location = request.POST.get('location')
-            print(Roomtype.objects.get(roomtype=roomtype))
+            address = request.POST['address']
+            mnumber = Manager.objects.get(username=request.user).pnumber
+            print(mnumber)
             room = Room(
                 manager = Manager.objects.get(username = request.user),
                 roomtype = Roomtype.objects.get(roomtype=roomtype),
                 capacity=capacity,
                 price = price,
                 status = status,
-                location = Location.objects.get(city=location)
+                location = Location.objects.get(city=location),
+                address = address,
+                mnumber=mnumber
             )
             room.save()
             timing = Timing(
@@ -218,32 +226,36 @@ def logout(request):
     return redirect('/')
 
 @login_required(login_url='customer_login')
-def customer_dashboard(request,user,location=None):
+def customer_dashboard(request,user):
     if request.user.is_authenticated:
         one = Customer.objects.filter(username=request.user).values_list('email',flat=True).first()
         print(one)
         two = User.objects.filter(username=user).values_list('email',flat=True).first()
         if one == two:
-            final_rooms = []
-            if(location!=None):
-                all_rooms = location.split(" ")
-                for i in range(len(all_rooms)):
-                    try:
-                        if(all_rooms[i]>='0'):
-                            all_rooms[i] = int(all_rooms[i])
-                    except:
-                        continue
-                temp = []
-                for i in range(len(all_rooms[:len(all_rooms)-1])):
-                    if(i!=0 and i%7==0):
-                        final_rooms.append(temp)
-                        temp = []
-                    temp.append(all_rooms[i])
-                print(final_rooms)
-            context = {
-                'allrooms':final_rooms
-            }
-            return render(request,'customer_dashboard.html',context)
+            # final_rooms = []
+            # if(location!=None):
+            #     all_rooms = location.split(" ")
+            #     for i in range(len(all_rooms)):
+            #         try:
+            #             if(all_rooms[i]>='0'):
+            #                 all_rooms[i] = int(all_rooms[i])
+            #         except:
+            #             continue
+            #     temp = []
+            #     count = 0
+            #     for i in range(len(all_rooms[:len(all_rooms)-1])):
+            #         if(count ==8):
+            #             final_rooms.append(temp)
+            #             temp = []
+            #             count = 0
+            #         temp.append(all_rooms[:len(all_rooms)-1][i])
+            #         count +=1
+            #     final_rooms.append(temp)
+            #     print(final_rooms)
+            # context = {
+            #     'allrooms':final_rooms
+            # }
+            return render(request,'customer_dashboard.html')
         else:
             auth.logout(request)
             return redirect('home')
@@ -382,7 +394,7 @@ def manager_register(request):
     if not request.user.is_authenticated:
         if(request.method == 'POST'):
             if request.POST['mpassword'] == request.POST['mpassword2']:
-                if(request.POST['musername'] and request.POST['memail'] and request.POST['mpassword']):
+                if(request.POST['musername'] and request.POST['memail'] and request.POST['mpassword'] and request.POST['mnumber']):
                     try:
                         user = User.objects.get(email=request.POST['memail'])
                         return render(request,'manager_register.html',{'error':"User already exists"})
@@ -405,7 +417,7 @@ def manager_register(request):
                         check_user = User.objects.get(email=request.POST['memail'])
                         auth.login(request, check_user)
                         print(request.user)
-                        manager = Manager(username=request.user,name=request.POST['mfullname'],email=email)
+                        manager = Manager(username=request.user,name=request.POST['mfullname'],email=email,pnumber=request.POST['mnumber'])
                         manager.save()
                         slot_range = Slotdelay(
                             manager = Manager.objects.get(username=request.user)

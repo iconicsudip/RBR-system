@@ -15,7 +15,6 @@ urlpatterns = [
     path('manager_login', views.manager_login,name='manager_login'),
     path('customer_register', views.customer_register,name='customer_register'),
     path('manager_register', views.manager_register,name='manager_register'),
-    path('customer_dashboard/<str:user>/<location>/', views.customer_dashboard,name='customer_dashboard'),
     path('customer_dashboard/<str:user>/', views.customer_dashboard,name='customer_dashboard'),
     path('manager_dashboard/<str:user>/', views.manager_dashboard,name='manager_dashboard'),
     path('logout', views.logout,name='logout'),

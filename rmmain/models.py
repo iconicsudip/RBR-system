@@ -10,10 +10,10 @@ class Customer(models.Model):
         return str(self.username)
 
 class Manager(models.Model):
-    username = models.ForeignKey(User,on_delete=models.CASCADE)
+    username = models.OneToOneField(User,on_delete=models.CASCADE)
     name = models.CharField(max_length=20,blank=False)
     email = models.CharField(max_length=200,blank=False)
-    
+    pnumber = models.CharField(max_length=11,blank=False)
     def __str__(self):
         return str(self.username)
 class Roomtype(models.Model):
@@ -33,6 +33,8 @@ class Room(models.Model):
     price = models.IntegerField(default=0)
     status = models.CharField(max_length=10000,blank=False)
     location = models.ForeignKey(Location,on_delete=models.CASCADE)
+    address = models.CharField(max_length=10000,blank=False)
+    mnumber = models.CharField(max_length=11,blank=False)
     def __str__(self):
         s = "{}".format(self.id)
         return s
