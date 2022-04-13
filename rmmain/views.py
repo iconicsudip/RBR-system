@@ -1,4 +1,3 @@
-
 import json
 from urllib.robotparser import RequestRate
 from django.http import HttpResponse
@@ -7,6 +6,7 @@ from django.contrib import messages, auth
 from django.contrib.auth.models import User
 from rmmain.models import Customer, Location,Manager, Room, Roomtype, Slotdelay, Timing
 from django.contrib.auth.decorators import login_required
+from datetime import date, datetime , timedelta
 # Create your views here.
 def home(request):
     if request.user.is_authenticated:
@@ -25,6 +25,46 @@ def home(request):
     else:
         return render(request,"home.html")
 
+def customer_bookings(request):
+    return redirect('customer_bookings')
+def bookroom(request,user,id):
+    if request.user.is_authenticated:
+        context = {
+            'id':id
+        }
+        return render(request,'bookroom.html',context)
+    else:
+        messages.error(request,"Login first")
+        return redirect('customer_login')
+def check(request,id):
+    if request.user.is_authenticated:
+        if(request.method == "POST"):
+            if(request.POST.get('startdate') and request.POST.get('enddate')):
+                if(str(request.POST.get('startdate'))<str(date.today())):
+                    messages.error(request,"You can only book room from today not before today.")
+                    return redirect('bookroom',user=request.user,id=id)
+                else:
+                    stdt = request.POST.get('startdate')
+                    endt = request.POST.get('enddate')
+                    manager = Room.objects.get(pk=id).manager
+                    minimumgap = Slotdelay.objects.get(manager = manager).bookbefore
+                    l1 = stdt.split("-")
+                    l2 = str(date.today() + timedelta(days=minimumgap)).split("-")
+                    b1 = date(int(l1[0]), int(l1[1]), int(l1[2]))
+                    b2 = date(int(l2[0]), int(l2[1]), int(l2[2]))
+                    if(b1>b2):
+                        messages.error(request,"You can only book room before "+str(minimumgap)+" day/days")
+                        return redirect('bookroom',user=request.user,id=id)
+                    else:
+                        return redirect('bookroom',user=request.user,id=id)
+            else:
+                messages.error(request,"Empty fields.")
+                return redirect('bookroom',user=request.user,id=id)
+        else:
+            return redirect('bookroom',user=request.user,id=id)
+    else:
+        messages.error(request,"Login first")
+        return redirect('customer_login')    
 def search(request):
     if request.user.is_authenticated:
         if(request.method == "POST"):
@@ -50,6 +90,7 @@ def search(request):
         else:
             return redirect('customer_dashboard',user=request.user)
     else:
+        messages.error(request,"Login first")
         return redirect('customer_login')
 
 def slotrange(request):
@@ -232,29 +273,6 @@ def customer_dashboard(request,user):
         print(one)
         two = User.objects.filter(username=user).values_list('email',flat=True).first()
         if one == two:
-            # final_rooms = []
-            # if(location!=None):
-            #     all_rooms = location.split(" ")
-            #     for i in range(len(all_rooms)):
-            #         try:
-            #             if(all_rooms[i]>='0'):
-            #                 all_rooms[i] = int(all_rooms[i])
-            #         except:
-            #             continue
-            #     temp = []
-            #     count = 0
-            #     for i in range(len(all_rooms[:len(all_rooms)-1])):
-            #         if(count ==8):
-            #             final_rooms.append(temp)
-            #             temp = []
-            #             count = 0
-            #         temp.append(all_rooms[:len(all_rooms)-1][i])
-            #         count +=1
-            #     final_rooms.append(temp)
-            #     print(final_rooms)
-            # context = {
-            #     'allrooms':final_rooms
-            # }
             return render(request,'customer_dashboard.html')
         else:
             auth.logout(request)

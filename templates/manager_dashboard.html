@@ -17,6 +17,21 @@
 </style>
 
 <body>
+    {% for message in messages %}
+        {%if message.tags == 'error'%}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>{{message}}</strong>
+                <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                </button>
+            </div>
+        {%else%}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>{{message}}</strong>
+                <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                </button>
+            </div>
+        {%endif%}
+    {% endfor %}
     <div class="container">
         <header
             class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
@@ -56,32 +71,33 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form class="row g-3" action="{% url 'slotrange'%}" method="POST" style="text-align: initial;">
+                            <form class="row g-3" action="{% url 'slotrange'%}" method="POST"
+                                style="text-align: initial;">
                                 {%csrf_token%}
                                 <div class="form-group mb-2 col-md-10">
                                     <label for="inputAddress">Slot Delay</label>
-                                    <input value="{{slot_range.slotrange}}" name="slotdelay" type="number" class="form-control" id="inputAddress"
-                                        placeholder="Slot delay">
+                                    <input value="{{slot_range.slotrange}}" name="slotdelay" type="number"
+                                        class="form-control" id="inputAddress" placeholder="Slot delay">
                                 </div>
                                 <div class="col-md-2">
                                     <label for="inputAddress"></label>
                                     {% if slot_range.slotrange == 1 %}
-                                        <input type="text"  value="hr" class="form-control" id="inputZip" disabled>
+                                    <input type="text" value="hr" class="form-control" id="inputZip" disabled>
                                     {%else%}
-                                        <input type="text"  value="hrs" class="form-control" id="inputZip" disabled>
+                                    <input type="text" value="hrs" class="form-control" id="inputZip" disabled>
                                     {%endif%}
                                 </div>
                                 <div class="form-group mb-2 col-md-10">
                                     <label for="inputAddress">Book Before</label>
-                                    <input value="{{slot_range.bookbefore}}" name="bookbefore" type="number" class="form-control" id="inputAddress"
-                                        placeholder="Book Before">
+                                    <input value="{{slot_range.bookbefore}}" name="bookbefore" type="number"
+                                        class="form-control" id="inputAddress" placeholder="Book Before">
                                 </div>
                                 <div class="col-md-2">
                                     <label for="inputAddress"></label>
                                     {% if slot_range.bookbefore == 1 %}
-                                        <input type="text"  value="day" class="form-control" id="inputZip" disabled>
+                                    <input type="text" value="day" class="form-control" id="inputZip" disabled>
                                     {%else%}
-                                        <input type="text"  value="days" class="form-control" id="inputZip" disabled>
+                                    <input type="text" value="days" class="form-control" id="inputZip" disabled>
                                     {%endif%}
                                 </div>
                                 <button type="submit" class="btn btn-success">Save Range</button>
@@ -106,7 +122,8 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form class="row g-3" action="{% url 'addroomtype'%}" method="POST" style="text-align: initial;">
+                            <form class="row g-3" action="{% url 'addroomtype'%}" method="POST"
+                                style="text-align: initial;">
                                 {%csrf_token%}
                                 <div class="form-group mb-2">
                                     <label for="inputAddress">Room Type</label>
@@ -136,7 +153,8 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form class="row g-3" action="{% url 'addroom'%}" method="POST" style="text-align: initial;">
+                            <form class="row g-3" action="{% url 'addroom'%}" method="POST"
+                                style="text-align: initial;">
                                 {%csrf_token%}
                                 <div class="form-row">
                                     <div class="form-group">
@@ -144,18 +162,20 @@
                                         <select name="roomtype" id="roomtype" class="form-control">
                                             <option selected>Choose Room Type...</option>
                                             {% for type in alltypes %}
-                                                <option value="{{type}}">{{ type }}</option>
+                                            <option value="{{type}}">{{ type }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="capacity">Capacity :</label>
-                                        <input name="capacity" type="number" class="form-control" id="capacity" placeholder="capacity">
+                                        <input name="capacity" type="number" class="form-control" id="capacity"
+                                            placeholder="capacity">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="price">Price :</label>
-                                    <input name="price" type="number" class="form-control" id="price" placeholder="Price">
+                                    <input name="price" type="number" class="form-control" id="price"
+                                        placeholder="Price">
                                 </div>
                                 <div class="form-group">
                                     <label for="status">Status : </label>
@@ -171,7 +191,7 @@
                                         <select name="location" id="location" class="form-control">
                                             <option selected>Choose any location...</option>
                                             {% for l in alllocations%}
-                                                <option value="{{l}}">{{l}}</option>
+                                            <option value="{{l}}">{{l}}</option>
                                             {%endfor%}
                                         </select>
                                     </div>
@@ -179,7 +199,8 @@
                                 <div class="form-group mb-2">
                                     <div class="form-group">
                                         <label for="location">Address : </label>
-                                        <input name="address" type="text" class="form-control" id="address" placeholder="Address">
+                                        <input name="address" type="text" class="form-control" id="address"
+                                            placeholder="Address">
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-success">Add Room</button>
@@ -204,7 +225,8 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form class="row g-3" action="{% url 'addlocation'%}" method="POST" style="text-align: initial;">
+                            <form class="row g-3" action="{% url 'addlocation'%}" method="POST"
+                                style="text-align: initial;">
                                 {%csrf_token%}
                                 <div class="form-row">
                                     <div class="form-group">
@@ -247,33 +269,39 @@
             </thead>
             <tbody>
                 {% for r in rooms %}
-                    {% if r.status == 'Available' %}
-                        <tr class="table-success">
-                            <th scope="row">{{forloop.counter}}</th>
-                            <td>{{r.roomtype}}</td>
-                            <td>{{r.status}}</td>
-                            <td>&#8377 {{r.price}}</td>
-                            <td>{{r.capacity}}</td>
-                            <td>{{r.location}}</td>
-                            <td><a name="" id="" class="btn btn-warning" href="/roomedit/{{request.user}}/{{r.id}}" role="button">Edit</a></td>
-                            <td><a name="{{r.id}}" id="" class="btn btn-danger" href="/roomdelete/{{r.id}}" role="button">Delete</a></td>
-                        </tr>
-                    {%else%}
-                        <tr class="table-danger">
-                            <th scope="row">{{forloop.counter}}</th>
-                            <td>{{r.roomtype}}</td>
-                            <td>{{r.status}}</td>
-                            <td>&#8377 {{r.price}}</td>
-                            <td>{{r.capacity}}</td>
-                            <td>{{r.location}}</td>
-                            <td><a name="" id="" class="btn btn-warning" href="/roomedit/{{request.user}}/{{r.id}}" role="button">Edit</a></td>
-                            <td><a name="{{r.id}}" id="" class="btn btn-danger" href="/roomdelete/{{r.id}}" role="button">Delete</a></td>
-                        </tr>
-                    {% endif %}
+                {% if r.status == 'Available' %}
+                <tr class="table-success">
+                    <th scope="row">{{forloop.counter}}</th>
+                    <td>{{r.roomtype}}</td>
+                    <td>{{r.status}}</td>
+                    <td>&#8377 {{r.price}}</td>
+                    <td>{{r.capacity}}</td>
+                    <td>{{r.location}}</td>
+                    <td><a name="" id="" class="btn btn-warning" href="/roomedit/{{request.user}}/{{r.id}}"
+                            role="button">Edit</a></td>
+                    <td><a name="{{r.id}}" id="" class="btn btn-danger" href="/roomdelete/{{r.id}}"
+                            role="button">Delete</a></td>
+                </tr>
+                {%else%}
+                <tr class="table-danger">
+                    <th scope="row">{{forloop.counter}}</th>
+                    <td>{{r.roomtype}}</td>
+                    <td>{{r.status}}</td>
+                    <td>&#8377 {{r.price}}</td>
+                    <td>{{r.capacity}}</td>
+                    <td>{{r.location}}</td>
+                    <td><a name="" id="" class="btn btn-warning" href="/roomedit/{{request.user}}/{{r.id}}"
+                            role="button">Edit</a></td>
+                    <td><a name="{{r.id}}" id="" class="btn btn-danger" href="/roomdelete/{{r.id}}"
+                            role="button">Delete</a></td>
+                </tr>
+                {% endif %}
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>

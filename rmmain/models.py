@@ -66,5 +66,15 @@ class Timing(models.Model):
     def __str__(self):
         return f"[ {self.manager} {self.roomid} ]"
     
+class Booking(models.Model):
+    customer=models.ForeignKey(Customer,on_delete=models.CASCADE)
+    manager= models.ForeignKey(Manager,default=False,on_delete=models.CASCADE)
+    roomid = models.ForeignKey(Room,on_delete=models.CASCADE)
+    startdate = models.DateField(blank=True)
+    enddate = models.DateField(blank=True)
+    slotstart = models.TimeField(blank=True)
+    slotend = models.TimeField(blank=True)
+    def __str__(self):
+        return str(self.customer)
 
 # Create your models here.
