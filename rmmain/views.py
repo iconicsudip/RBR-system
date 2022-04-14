@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib import messages, auth
 from django.contrib.auth.models import User
-from rmmain.models import Customer, Location,Manager, Room, Roomtype, Slotdelay, Timing
+from rmmain.models import Booking, Customer, Location,Manager, Room, Roomtype, Slotdelay, Timing
 from django.contrib.auth.decorators import login_required
 from datetime import date, datetime , timedelta
 # Create your views here.
@@ -25,8 +25,54 @@ def home(request):
     else:
         return render(request,"home.html")
 
-def customer_bookings(request):
-    return redirect('customer_bookings')
+def cancelbook(request):
+    #bookidcheckemail
+    if request.user.is_authenticated:
+        if(request.method == "POST"):
+            if(request.POST['checkemail']):
+                try:
+                    customer = Customer.objects.get(email=request.POST['checkemail'])
+                    if(str(customer) == str(request.user)):
+                        change_booking = Booking.objects.get(pk=request.POST['bookid'])
+                        print(change_booking.valid)
+                        change_booking.valid = False
+                        change_booking.save()
+                        return redirect('bookings')
+                    else:
+                        messages.error(request,"Username of this email id and your username not matched ,please check your email id once.")
+                        return redirect('bookings')
+                except:
+                    messages.error(request,"Wrong email id")
+                    return redirect('bookings')
+            else:
+                messages.error(request,"Empty fields.")
+                return redirect('bookings')
+        else:
+            return redirect('bookings')    
+    else:
+        messages.error(request,"You have to login first")
+        return redirect('customer_login')
+    return redirect('bookings')
+
+def bookdelete(request,id):
+    bookedroom = Booking.objects.get(pk=id)
+    #print(bookedroom)
+    bookedroom.delete()
+    return redirect('bookings')
+
+def bookings(request):
+    if request.user.is_authenticated:
+        #print(request.user)
+        booking_list = Booking.objects.filter(customer=Customer.objects.get(username=request.user))
+        #print(booking_list)
+        context = {
+            'booking_list':booking_list
+        }
+        return render(request,'customer_bookings.html',context)
+    else:
+        messages.error(request,"You have to login first")
+        return redirect('customer_login')
+
 def bookroom(request,user,id):
     if request.user.is_authenticated:
         context = {
@@ -63,7 +109,7 @@ def check(request,id):
         else:
             return redirect('bookroom',user=request.user,id=id)
     else:
-        messages.error(request,"Login first")
+        messages.error(request,"You have to login first")
         return redirect('customer_login')    
 def search(request):
     if request.user.is_authenticated:

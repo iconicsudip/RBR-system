@@ -17,6 +17,21 @@
 
 <body>
     <!-- Pills navs -->
+    {% for message in messages %}
+        {%if message.tags == 'error'%}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>{{message}}</strong>
+                <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                </button>
+            </div>
+        {%else%}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>{{message}}</strong>
+                <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                </button>
+            </div>
+        {%endif%}
+    {% endfor %}
     <div class="container-fluid">
         <section class="w-100 p-4 d-flex justify-content-center pb-4 " style="margin-top: 4rem;margin-bottom: 4rem;">
             <form action="{% url 'customer_login'%}" method="POST" style="width: 22rem;padding: 1rem;background: aquamarine;border-radius: 8px;">

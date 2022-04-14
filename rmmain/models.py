@@ -74,6 +74,7 @@ class Booking(models.Model):
     enddate = models.DateField(blank=True)
     slotstart = models.TimeField(blank=True)
     slotend = models.TimeField(blank=True)
+    valid = models.BooleanField(default=True,blank=True)
     def __str__(self):
         return str(self.customer)
 
