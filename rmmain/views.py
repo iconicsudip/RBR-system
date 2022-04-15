@@ -25,6 +25,42 @@ def home(request):
     else:
         return render(request,"home.html")
 
+def customer_bookings(request):
+    if request.user.is_authenticated:
+        booking_list = Booking.objects.filter(manager=Manager.objects.get(username=request.user))
+        context = {
+            'booking_list':booking_list
+        }
+        return render(request,'customer_bookings.html',context)
+    else:
+        messages.error(request,"You have to login first")
+        return redirect('manager_login')
+def cancelslot(request):
+    if request.user.is_authenticated:
+        if(request.method == "POST"):
+            if(request.POST['checkemail']):
+                try:
+                    customer = Manager.objects.get(email=request.POST['checkemail'])
+                    if(str(customer) == str(request.user)):
+                        change_booking = Booking.objects.get(pk=request.POST['bookid'])
+                        print(change_booking.valid)
+                        change_booking.valid = False
+                        change_booking.save()
+                        return redirect('customer_bookings')
+                    else:
+                        messages.error(request,"Username of this email id and your username not matched ,please check your email id once.")
+                        return redirect('customer_bookings')
+                except:
+                    messages.error(request,"Wrong email id")
+                    return redirect('customer_bookings')
+            else:
+                messages.error(request,"Empty fields.")
+                return redirect('customer_bookings')
+        else:
+            return redirect('customer_bookings')    
+    else:
+        messages.error(request,"You have to login first")
+        return redirect('manager_login')
 def cancelbook(request):
     #bookidcheckemail
     if request.user.is_authenticated:
@@ -52,13 +88,16 @@ def cancelbook(request):
     else:
         messages.error(request,"You have to login first")
         return redirect('customer_login')
-    return redirect('bookings')
 
 def bookdelete(request,id):
     bookedroom = Booking.objects.get(pk=id)
     #print(bookedroom)
     bookedroom.delete()
-    return redirect('bookings')
+    try:
+        customer = Customer.objects.get(username = request.user)
+        return redirect('bookings')
+    except:
+        return redirect('customer_bookings')
 
 def bookings(request):
     if request.user.is_authenticated:
@@ -68,7 +107,7 @@ def bookings(request):
         context = {
             'booking_list':booking_list
         }
-        return render(request,'customer_bookings.html',context)
+        return render(request,'bookings.html',context)
     else:
         messages.error(request,"You have to login first")
         return redirect('customer_login')
@@ -86,7 +125,7 @@ def check(request,id):
     if request.user.is_authenticated:
         if(request.method == "POST"):
             if(request.POST.get('startdate') and request.POST.get('enddate')):
-                if(str(request.POST.get('startdate'))<str(date.today())):
+                if(str(request.POST.get('startdate'))<str(date.today()) or str(request.POST.get('enddate'))<str(date.today())):
                     messages.error(request,"You can only book room from today not before today.")
                     return redirect('bookroom',user=request.user,id=id)
                 else:

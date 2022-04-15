@@ -15,7 +15,50 @@
         text-align: center;
     }
     input{
-        padding: 0.22rem;
+        padding: 0.3rem;
+        border: 1px solid #c7c1c1;
+        width: 20rem;
+    }
+    #gappointments_calendar_slots label.time_slot {
+        margin: 5px;
+        display: block;
+        border-radius: 3px;
+        background: #fff;
+        font-weight: normal;
+        font-size: inherit;
+        width: auto !important;
+        -webkit-transition: 0.2s ease-in-out;
+        -moz-transition: 0.2s ease-in-out;
+        -o-transition: 0.2s ease-in-out;
+        transition: 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+    #gappointments_calendar_slots input.hidden_radio:checked + label.time_slot {
+        background: #1dd59a;
+        color: #fff;
+    }
+    input[type="radio"] {
+        vertical-align: text-bottom;
+        box-shadow: none;
+        background: none;
+    }
+    #gappointments_calendar_slots input.hidden_radio {
+        display: none;
+    }
+    .slot_small{
+        width: 10rem;
+    }
+    .grid_no_pad{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+    }
+    .time_slot{
+        padding: 1rem;
     }
 </style>
 
@@ -46,48 +89,47 @@
                 <button type="submit" class="btn btn-success">Check Avaibility</button>
             </form>
             <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">Room number</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Capacity</th>
-                        <th scope="col">Location</th>
-                        <th scope="col">Act Edit</th>
-                        <th scope="col">Act Delete</th>
-                    </tr>
-                </thead>
                 <tbody>
-                    {% for r in rooms %}
-                    {% if r.status == 'Available' %}
-                    <tr class="table-success">
-                        <th scope="row">{{forloop.counter}}</th>
-                        <td>{{r.roomtype}}</td>
-                        <td>{{r.status}}</td>
-                        <td>&#8377 {{r.price}}</td>
-                        <td>{{r.capacity}}</td>
-                        <td>{{r.location}}</td>
-                        <td><a name="" id="" class="btn btn-warning" href="/roomedit/{{request.user}}/{{r.id}}"
-                                role="button">Edit</a></td>
-                        <td><a name="{{r.id}}" id="" class="btn btn-danger" href="/roomdelete/{{r.id}}"
-                                role="button">Delete</a></td>
-                    </tr>
-                    {%else%}
-                    <tr class="table-danger">
-                        <th scope="row">{{forloop.counter}}</th>
-                        <td>{{r.roomtype}}</td>
-                        <td>{{r.status}}</td>
-                        <td>&#8377 {{r.price}}</td>
-                        <td>{{r.capacity}}</td>
-                        <td>{{r.location}}</td>
-                        <td><a name="" id="" class="btn btn-warning" href="/roomedit/{{request.user}}/{{r.id}}"
-                                role="button">Edit</a></td>
-                        <td><a name="{{r.id}}" id="" class="btn btn-danger" href="/roomdelete/{{r.id}}"
-                                role="button">Delete</a></td>
-                    </tr>
-                    {% endif %}
-                    {% endfor %}
+                    <tr id="gappointments_calendar_slots"><td colspan="7" class="calendar_slots"><div class="calendar_time_slots"><h3 class="slots-title">April 20, 2022</h3><div class="grid-row grid_no_pad"><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="9:30 AM" name="gf_input_booking_time">
+                        <label class="time_slot" for="9:30 AM" capacity="1" time_slot="09:30" service_id="47">9:30 AM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="10:00 AM" name="gf_input_booking_time">
+                        <label class="time_slot" for="10:00 AM" capacity="1" time_slot="10:00" service_id="47">10:00 AM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="10:30 AM" name="gf_input_booking_time">
+                        <label class="time_slot" for="10:30 AM" capacity="1" time_slot="10:30" service_id="47">10:30 AM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="11:00 AM" name="gf_input_booking_time">
+                        <label class="time_slot" for="11:00 AM" capacity="1" time_slot="11:00" service_id="47">11:00 AM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="11:30 AM" name="gf_input_booking_time">
+                        <label class="time_slot" for="11:30 AM" capacity="1" time_slot="11:30" service_id="47">11:30 AM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="12:00 PM" name="gf_input_booking_time">
+                        <label class="time_slot" for="12:00 PM" capacity="1" time_slot="12:00" service_id="47">12:00 PM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="12:30 PM" name="gf_input_booking_time">
+                        <label class="time_slot" for="12:30 PM" capacity="1" time_slot="12:30" service_id="47">12:30 PM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="1:00 PM" name="gf_input_booking_time">
+                        <label class="time_slot" for="1:00 PM" capacity="1" time_slot="13:00" service_id="47">1:00 PM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="1:30 PM" name="gf_input_booking_time">
+                        <label class="time_slot" for="1:30 PM" capacity="1" time_slot="13:30" service_id="47">1:30 PM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="2:00 PM" name="gf_input_booking_time">
+                        <label class="time_slot" for="2:00 PM" capacity="1" time_slot="14:00" service_id="47">2:00 PM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="2:30 PM" name="gf_input_booking_time">
+                        <label class="time_slot" for="2:30 PM" capacity="1" time_slot="14:30" service_id="47">2:30 PM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="3:00 PM" name="gf_input_booking_time">
+                        <label class="time_slot" for="3:00 PM" capacity="1" time_slot="15:00" service_id="47">3:00 PM</label>
+                    </div><div class="slot_small grid-lg-3 grid-md-3 grid-sm-3 grid-xs-6 grid_no_pad">
+                        <input class="hidden_radio" type="radio" id="3:30 PM" name="gf_input_booking_time">
+                        <label class="time_slot" for="3:30 PM" capacity="1" time_slot="15:30" service_id="47">3:30 PM</label>
+                    </div></div></div></td></tr>
                 </tbody>
             </table>
         </div>
