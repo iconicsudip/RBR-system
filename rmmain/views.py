@@ -1,5 +1,4 @@
 import calendar
-import json
 from urllib.robotparser import RequestRate
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
@@ -8,7 +7,10 @@ from django.contrib.auth.models import User
 from rmmain.models import Booking, Customer, Location,Manager, Room, Roomtype, Slotdelay, Timing
 from django.contrib.auth.decorators import login_required
 from datetime import date, datetime , timedelta,time
+
 # Create your views here.
+
+
 def home(request):
     if request.user.is_authenticated:
         try:
@@ -36,6 +38,7 @@ def customer_bookings(request):
     else:
         messages.error(request,"You have to login first")
         return redirect('manager_login')
+
 def cancelslot(request):
     if request.user.is_authenticated:
         if(request.method == "POST"):
@@ -44,7 +47,6 @@ def cancelslot(request):
                     customer = Manager.objects.get(email=request.POST['checkemail'])
                     if(str(customer) == str(request.user)):
                         change_booking = Booking.objects.get(pk=request.POST['bookid'])
-                        print(change_booking.valid)
                         change_booking.valid = False
                         change_booking.save()
                         return redirect('customer_bookings')
@@ -62,8 +64,8 @@ def cancelslot(request):
     else:
         messages.error(request,"You have to login first")
         return redirect('manager_login')
+
 def cancelbook(request):
-    #bookidcheckemail
     if request.user.is_authenticated:
         if(request.method == "POST"):
             if(request.POST['checkemail']):
@@ -71,7 +73,6 @@ def cancelbook(request):
                     customer = Customer.objects.get(email=request.POST['checkemail'])
                     if(str(customer) == str(request.user)):
                         change_booking = Booking.objects.get(pk=request.POST['bookid'])
-                        print(change_booking.valid)
                         change_booking.valid = False
                         change_booking.save()
                         return redirect('bookings')
@@ -92,7 +93,6 @@ def cancelbook(request):
 
 def bookdelete(request,id):
     bookedroom = Booking.objects.get(pk=id)
-    #print(bookedroom)
     bookedroom.delete()
     try:
         customer = Customer.objects.get(username = request.user)
@@ -100,11 +100,31 @@ def bookdelete(request,id):
     except:
         return redirect('customer_bookings')
 
+def book(request):
+    if request.user.is_authenticated:
+        if(request.method == "POST"):
+            manager = request.POST.get('manager')
+            booked = Booking(
+                customer=Customer.objects.get(username=request.user),
+                manager = Manager.objects.get(username=User.objects.get(username=manager)),
+                roomid = Room.objects.get(id = request.POST.get('roomid')),
+                startdate = request.POST.get('bookstart'),
+                enddate = request.POST.get('bookend'),
+                slotstart = request.POST.get('booking_time'),
+                slotend = request.POST.get('booking_time')
+            )
+            booked.save()
+            return redirect('bookings')
+        else:
+            return redirect('customer_dashboard',user=request.user)
+        
+    else:
+        messages.error(request,"You have to login first")
+        return redirect('customer_login')
+
 def bookings(request):
     if request.user.is_authenticated:
-        #print(request.user)
         booking_list = Booking.objects.filter(customer=Customer.objects.get(username=request.user))
-        #print(booking_list)
         context = {
             'booking_list':booking_list
         }
@@ -113,9 +133,9 @@ def bookings(request):
         messages.error(request,"You have to login first")
         return redirect('customer_login')
 
-def bookroom(request,user,id,day=None,year=None):
+def bookroom(request,user,id,day=None,year=None,year1=None):
     if request.user.is_authenticated:
-        if(day==None and year==None):
+        if(day==None and year==None and year1==None):
             context = {
                 'id':id
             }
@@ -127,7 +147,6 @@ def bookroom(request,user,id,day=None,year=None):
             temp_date=str(year).split("-")
             temp_date = [int(x) for x in temp_date]
             set_time = None
-            print(delay.slotrange)
             if(day == "Sunday"):
                 slots = []
                 check_time = times.ssunday
@@ -199,8 +218,6 @@ def bookroom(request,user,id,day=None,year=None):
                 "11":"November",
                 "12":"December"
             }
-            print(id)
-            print(year)
             booked = Booking.objects.filter(roomid=id)
             valid = "Yes"
             busy_slot = []
@@ -220,7 +237,7 @@ def bookroom(request,user,id,day=None,year=None):
                             break
                     else:
                         continue
-            print(busy_slot)
+
             context = {
                 'id':id,
                 'date':temp_date[2],
@@ -228,12 +245,16 @@ def bookroom(request,user,id,day=None,year=None):
                 'year':temp_date[0],
                 'valid':valid,
                 'busy_slot':busy_slot,
+                'bookstart':year,
+                'bookend':year1,
+                'roomdetails':times,
                 'slots':slots
             }
             return render(request,'bookroom.html',context)
     else:
         messages.error(request,"Login first")
         return redirect('customer_login')
+
 def check(request,id):
     if request.user.is_authenticated:
         if(request.method == "POST"):
@@ -256,8 +277,7 @@ def check(request,id):
                     else:
                         days =["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
                         daynum = calendar.weekday(int(l1[0]), int(l1[1]), int(l1[2]))
-                        print(days[daynum])
-                        return redirect('bookroom',user=request.user,id=id,day=days[daynum],year=str(request.POST.get('startdate')))
+                        return redirect('bookroom',user=request.user,id=id,day=days[daynum],year=str(request.POST.get('startdate')),year1=str(endt))
             else:
                 messages.error(request,"Empty fields.")
                 return redirect('bookroom',user=request.user,id=id)
@@ -266,6 +286,7 @@ def check(request,id):
     else:
         messages.error(request,"You have to login first")
         return redirect('customer_login')    
+
 def search(request):
     if request.user.is_authenticated:
         if(request.method == "POST"):
@@ -273,7 +294,6 @@ def search(request):
                 try:
                     l = Location.objects.get(city =str(request.POST['location']).capitalize())
                     location = Room.objects.filter(location = l)
-                    print(location)
                     if(len(location)>0):
                         context = {
                             'allrooms':location
@@ -303,7 +323,6 @@ def slotrange(request):
                 slot_range.slotrange = request.POST['slotdelay']
                 slot_range.bookbefore = request.POST['bookbefore']
                 slot_range.save()
-                print(slot_range)
                 return redirect('manager_dashboard',user=request.user)
             else:
                 messages.error(request,"Empty fields.")
@@ -312,6 +331,7 @@ def slotrange(request):
             return redirect('manager_dashboard',user=request.user)
     else:
         return redirect('manager_login')
+
 def roomedit(request,user,id):
     if request.user.is_authenticated:
         if(request.method == "POST"):
@@ -359,7 +379,6 @@ def roomedit(request,user,id):
             locations = Location.objects.all()
             prev_data = Room.objects.get(pk=id)
             bookrange = Timing.objects.get(roomid = id)
-            print(bookrange.smonday)
             context = {
                 'alltypes':all_roomtypes,
                 'alllocations' : locations,
@@ -370,11 +389,12 @@ def roomedit(request,user,id):
             return render(request,'roomedit.html',context)
     else:
         return redirect('manager_login')
+
 def roomdelete(request,id):
     room_instance = Room.objects.get(id=id)
-    print(room_instance)
     room_instance.delete()
     return redirect('manager_dashboard',user=request.user)
+
 def addroom(request):
     if(request.method == 'POST'):
         if(request.POST.get('roomtype') and request.POST['capacity'] and request.POST['price'] and request.POST.get('status') and request.POST.get('location') and request.POST['address']):
@@ -385,7 +405,6 @@ def addroom(request):
             location = request.POST.get('location')
             address = request.POST['address']
             mnumber = Manager.objects.get(username=request.user).pnumber
-            print(mnumber)
             room = Room(
                 manager = Manager.objects.get(username = request.user),
                 roomtype = Roomtype.objects.get(roomtype=roomtype),
@@ -408,19 +427,17 @@ def addroom(request):
             return redirect('manager_dashboard',user=request.user)
     else:
         return redirect('manager_dashboard',user=request.user)
+
 def addlocation(request):
     if(request.method == "POST"):
         if(request.POST['city'] and request.POST['state'] and request.POST['country']):
             city = str(request.POST['city']).capitalize()
             state = str(request.POST['state']).capitalize()
             country = str(request.POST['country']).capitalize()
-            print(city,state,country)
             check_state = [x[0] for x in Location.objects.filter(country=country).values_list('state').all()]
             if(state in list(check_state)):
-                #print(list(check_state))
                 check_city = [x[0] for x in Location.objects.filter(state=state).values_list('city').all()]
                 if(city in list(check_city)):
-                    print(list(check_city))
                     messages.error(request,"This location is already exists")
                     return redirect('manager_dashboard',user=request.user)
                 else:
@@ -444,12 +461,12 @@ def addlocation(request):
             return redirect('manager_dashboard',user=request.user)
     else:
         return redirect('manager_dashboard',user=request.user)
+
 def addroomtype(request):
     if request.method == "POST":
         if(request.POST['roomtype']):
             check_roomtype=Roomtype.objects.filter(roomtype=request.POST['roomtype']).values_list('roomtype').first()
             if(check_roomtype!=None):
-                print(check_roomtype)
                 messages.error(request,"This room type is already exists")
                 return redirect('manager_dashboard',user=request.user)
             else:
@@ -471,7 +488,6 @@ def logout(request):
 def customer_dashboard(request,user):
     if request.user.is_authenticated:
         one = Customer.objects.filter(username=request.user).values_list('email',flat=True).first()
-        print(one)
         two = User.objects.filter(username=user).values_list('email',flat=True).first()
         if one == two:
             return render(request,'customer_dashboard.html')
@@ -492,7 +508,6 @@ def manager_dashboard(request,user):
             usr =Manager.objects.get(username=request.user)
             rooms = Room.objects.filter(manager=usr)
             slot_range = Slotdelay.objects.get(manager = usr)
-            print(slot_range)
             context = {
                 'alltypes':all_roomtypes,
                 'alllocations' : locations,
@@ -513,7 +528,6 @@ def customer_login(request):
                 try:
                     one = Customer.objects.filter(email = request.POST['email']).values_list('email',flat=True).first()
                     two = User.objects.filter(email=request.POST['email']).values_list('email',flat=True).first()
-                    print(one," ",two)
                     if(one == two):
                         user = User.objects.get(email=request.POST['email'])
                         try:
@@ -521,16 +535,18 @@ def customer_login(request):
                             if check_user is not None:
                                 auth.login(request,user)
                                 messages.success(request, "You are successfully logged in now, you can see your dashboard")
-                                print("LOL")
                                 return redirect('customer_dashboard',user=request.user)
                             else:
                                 messages.error(request, "Invalid Credentials,Please try again")
                                 return redirect("customer_login")
                         except:
-                            return render(request,'customer_login.html',{'error': "Invalid credentials."})
+                            messages.error(request, "Invalid Credentials,Please try again")
+                            return render(request,'customer_login.html')
                     else:
+                        messages.error(request, "Invalid Credentials,Please try again")
                         return render(request,'customer_login.html')
                 except User.DoesNotExist:
+                    messages.error(request, "User doesn't exists.")
                     return render(request, 'customer_login.html', {'error': "User doesn't exists."})        
             else:
                 return render(request, 'customer_login.html', {'error': "Empty field occurs."})
@@ -546,7 +562,6 @@ def manager_login(request):
                 try:
                     one = Manager.objects.filter(email = request.POST['memail']).values_list('email',flat=True).first()
                     two = User.objects.filter(email=request.POST['memail']).values_list('email',flat=True).first()
-                    print(one," ",two)
                     if(one == two):
                         user = User.objects.get(email=request.POST['memail'])
                         try:
@@ -554,7 +569,6 @@ def manager_login(request):
                             if check_user is not None:
                                 auth.login(request,user)
                                 messages.success(request, "You are successfully logged in now, you can see your dashboard")
-                                print("LOL")
                                 return redirect('manager_dashboard',user=request.user)
                             else:
                                 messages.error(request, "Invalid Credentials,Please try again")
@@ -593,7 +607,6 @@ def customer_register(request):
                         auth.authenticate(request,email=email,password =password)
                         check_user = User.objects.get(email=request.POST['email'])
                         auth.login(request, check_user)
-                        print(request.user)
                         customer = Customer(username=request.user,name=request.POST['fullname'],email=email)
                         customer.save()
                         messages.success(
@@ -628,14 +641,11 @@ def manager_register(request):
                                 password = password,
                             )
                             user.save()
-
                         except:
-                            print("USER")
                             return render(request,'manager_register.html',{'error':"User already exist on this username"})
                         auth.authenticate(request,email=email,password =password)
                         check_user = User.objects.get(email=request.POST['memail'])
                         auth.login(request, check_user)
-                        print(request.user)
                         manager = Manager(username=request.user,name=request.POST['mfullname'],email=email,pnumber=request.POST['mnumber'])
                         manager.save()
                         slot_range = Slotdelay(
@@ -654,4 +664,3 @@ def manager_register(request):
     else:
         messages.success(request, "You have to sign up")
         return render(request,"manager_register.html")
-
