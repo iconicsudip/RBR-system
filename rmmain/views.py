@@ -1,3 +1,4 @@
+import calendar
 import json
 from urllib.robotparser import RequestRate
 from django.http import HttpResponse
@@ -6,7 +7,7 @@ from django.contrib import messages, auth
 from django.contrib.auth.models import User
 from rmmain.models import Booking, Customer, Location,Manager, Room, Roomtype, Slotdelay, Timing
 from django.contrib.auth.decorators import login_required
-from datetime import date, datetime , timedelta
+from datetime import date, datetime , timedelta,time
 # Create your views here.
 def home(request):
     if request.user.is_authenticated:
@@ -112,12 +113,124 @@ def bookings(request):
         messages.error(request,"You have to login first")
         return redirect('customer_login')
 
-def bookroom(request,user,id):
+def bookroom(request,user,id,day=None,year=None):
     if request.user.is_authenticated:
-        context = {
-            'id':id
-        }
-        return render(request,'bookroom.html',context)
+        if(day==None and year==None):
+            context = {
+                'id':id
+            }
+            return render(request,'bookroom.html',context)
+        else:
+            times = Timing.objects.get(roomid = id)
+            t_manager = times.manager
+            delay = Slotdelay.objects.get(manager=Manager.objects.get(username=User.objects.get(username=t_manager)))
+            temp_date=str(year).split("-")
+            temp_date = [int(x) for x in temp_date]
+            set_time = None
+            print(delay.slotrange)
+            if(day == "Sunday"):
+                slots = []
+                check_time = times.ssunday
+                set_time = times.ssunday
+                while(str(check_time) < str(times.esunday)):
+                    t = (datetime(temp_date[0], temp_date[1],temp_date[2], check_time.hour, check_time.minute, check_time.second) + timedelta(hours=delay.slotrange)).time()
+                    slots.append((t))
+                    check_time = t
+            elif(day=="Monday"):
+                slots = []
+                check_time = times.smonday
+                set_time = times.smonday
+                while(str(check_time) < str(times.emonday)):
+                    t = (datetime(temp_date[0], temp_date[1],temp_date[2], check_time.hour, check_time.minute, check_time.second) + timedelta(hours=delay.slotrange)).time()
+                    slots.append((t))
+                    check_time = t
+            elif(day=="Tuesday"):
+                slots = []
+                check_time = times.stuesday
+                set_time = times.stuesday
+                while(str(check_time) < str(times.etuesday)):
+                    t = (datetime(temp_date[0], temp_date[1],temp_date[2], check_time.hour, check_time.minute, check_time.second) + timedelta(hours=delay.slotrange)).time()
+                    slots.append((t))
+                    check_time = t
+            elif(day=="Wednesday"):
+                slots = []
+                check_time = times.swednesday
+                set_time = times.swednesday
+                while(str(check_time) < str(times.ewednesday)):
+                    t = (datetime(temp_date[0], temp_date[1],temp_date[2], check_time.hour, check_time.minute, check_time.second) + timedelta(hours=delay.slotrange)).time()
+                    slots.append((t))
+                    check_time = t
+            elif(day=="Thursday"):
+                slots = []
+                check_time = times.sthursday
+                set_time = times.sthursday
+                while(str(check_time) < str(times.ethursday)):
+                    t = (datetime(temp_date[0], temp_date[1],temp_date[2], check_time.hour, check_time.minute, check_time.second) + timedelta(hours=delay.slotrange)).time()
+                    slots.append((t))
+                    check_time = t
+            elif(day=="Friday"):
+                slots = []
+                check_time = times.sfriday
+                set_time = times.sfriday
+                while(str(check_time) < str(times.efriday)):
+                    t = (datetime(temp_date[0], temp_date[1],temp_date[2], check_time.hour, check_time.minute, check_time.second) + timedelta(hours=delay.slotrange)).time()
+                    slots.append((t))
+                    check_time = t
+            else:
+                slots = []
+                check_time = times.ssaturday
+                set_time = times.ssaturday
+                while(str(check_time) < str(times.esaturday)):
+                    t = (datetime(temp_date[0], temp_date[1],temp_date[2], check_time.hour, check_time.minute, check_time.second) + timedelta(hours=delay.slotrange)).time()
+                    slots.append((t))
+                    check_time = t
+            
+            month_name = {
+                "1":"January",
+                "2":"February",
+                "3":"March",
+                "4":"April",
+                "5":"May",
+                "6":"June",
+                "7":"July",
+                "8":"August",
+                "9":"September",
+                "10":"October",
+                "11":"November",
+                "12":"December"
+            }
+            print(id)
+            print(year)
+            booked = Booking.objects.filter(roomid=id)
+            valid = "Yes"
+            busy_slot = []
+            for book in booked:
+                if(book.valid):
+                    if(str(book.startdate)<=str(year)<=str(book.enddate)):
+                        if(str(year)==str(book.startdate) and str(year)==str(book.enddate)):
+                            pass
+                        elif(str(year)==str(book.enddate)):
+                            check_time = set_time
+                            while(str(check_time) < str(book.slotend)):
+                                t = (datetime(temp_date[0], temp_date[1],temp_date[2], check_time.hour, check_time.minute, check_time.second) + timedelta(hours=delay.slotrange)).time()
+                                busy_slot.append((t))
+                                check_time = t
+                        else:
+                            valid = "No"
+                            break
+                    else:
+                        continue
+            print(busy_slot)
+            context = {
+                'id':id,
+                'date':temp_date[2],
+                'month':month_name[str(temp_date[1])],
+                'year':temp_date[0],
+                'valid':valid,
+                'busy_slot':busy_slot,
+                'slots':slots
+            }
+            return render(request,'bookroom.html',context)
     else:
         messages.error(request,"Login first")
         return redirect('customer_login')
@@ -141,7 +254,10 @@ def check(request,id):
                         messages.error(request,"You can only book room before "+str(minimumgap)+" day/days")
                         return redirect('bookroom',user=request.user,id=id)
                     else:
-                        return redirect('bookroom',user=request.user,id=id)
+                        days =["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+                        daynum = calendar.weekday(int(l1[0]), int(l1[1]), int(l1[2]))
+                        print(days[daynum])
+                        return redirect('bookroom',user=request.user,id=id,day=days[daynum],year=str(request.POST.get('startdate')))
             else:
                 messages.error(request,"Empty fields.")
                 return redirect('bookroom',user=request.user,id=id)

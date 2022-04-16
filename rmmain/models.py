@@ -72,8 +72,8 @@ class Booking(models.Model):
     roomid = models.ForeignKey(Room,on_delete=models.CASCADE)
     startdate = models.DateField(blank=True)
     enddate = models.DateField(blank=True)
-    slotstart = models.TimeField(blank=True)
-    slotend = models.TimeField(blank=True)
+    slotstart = models.TimeField(blank=True,null=True)
+    slotend = models.TimeField(blank=True,null=True)
     valid = models.BooleanField(default=True,blank=True)
     def __str__(self):
         return str(self.customer)

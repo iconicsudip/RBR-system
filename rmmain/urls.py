@@ -7,6 +7,7 @@ urlpatterns = [
     path('addroomtype', views.addroomtype,name='addroomtype'),
     path('addroom', views.addroom,name='addroom'),
     path('search', views.search,name='search'),
+    path('bookroom/<str:user>/<int:id>/<str:day>/<str:year>', views.bookroom,name='bookroom'),
     path('bookroom/<str:user>/<int:id>', views.bookroom,name='bookroom'),
     path('bookings', views.bookings,name='bookings'),
     path('customer_bookings', views.customer_bookings,name='customer_bookings'),
