@@ -10,7 +10,35 @@
     <link rel="stylesheet" href="{%static './card.css'%}">
     <title>Room Seeker</title>
 </head>
+<style>
+    .bodyrms {
+  display: grid;
+  padding: 2rem;
+  grid-template-columns: 300px 1fr;
+  gap: 1rem;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+  font: 500 100%/1.5 system-ui;
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+@media (max-width: 650px) {
+  .bodyrms {
+    display: block;
+    font-size: 80%;
+  }
+  .bodyrms p {
+    position: relative;
+    margin: -3rem 0 2rem 1rem;
+    padding: 1rem;
+    background: #ffb2b2a8;
+  }
+}
 
+</style>
 <body>
     {% for message in messages %}
         {%if message.tags == 'error'%}
@@ -40,9 +68,6 @@
                         <li><a href="/customer_dashboard/{{request.user}}/" class="nav-link px-2 link-dark">Customer Dashboard</a></li>
                     {%endif%}
                 {%endif%}
-                <li><a href="#" class="nav-link px-2 link-dark">Pricing</a></li>
-                <li><a href="#" class="nav-link px-2 link-dark">FAQs</a></li>
-                <li><a href="#" class="nav-link px-2 link-dark">About</a></li>
             </ul>
             {% if user.is_authenticated %}
                 <div class="col-md-3 text-end">
@@ -58,6 +83,14 @@
         </header>
     </div>
     {% if user.is_authenticated %}
+        <div class="bodyrms">
+            <img src='https://source.unsplash.com/random/600x300/?room' width="400" height="300" alt=''>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Explicabo in, impedit quod dicta est facilis consectetur laborum eius vitae voluptate asperiores, vel ipsa laboriosam odit esse beatae nesciunt architecto deserunt.</p>
+            <img src='https://source.unsplash.com/random/600x300/?room' width="400" height="300" alt=''>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Recusandae nisi quidem sint eius quos corrupti, perferendis unde at. Ipsam saepe error, quos iste enim temporibus voluptatum ea harum inventore neque!</p>
+            <img src='https://source.unsplash.com/random/600x300/?room' width="400" height="300" alt=''>
+            <p>Aut dolor aspernatur cupiditate repudiandae eos accusantium inventore molestiae sequi earum perspiciatis qui odio minima magni, iste fugit reiciendis atque tenetur quaerat itaque incidunt, consequuntur esse. Accusantium doloribus odit debitis.</p>
+        </div>
     {% else %}
         <div class="container-fluid" style="margin: auto;position: absolute;top: 10rem;bottom: 50%;">
             <div class="row">
@@ -79,8 +112,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="bodyrms">
+                    <img src='https://source.unsplash.com/random/600x300/?room' width="400" height="300" alt=''>
+                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Explicabo in, impedit quod dicta est facilis consectetur laborum eius vitae voluptate asperiores, vel ipsa laboriosam odit esse beatae nesciunt architecto deserunt.</p>
+                    <img src='https://source.unsplash.com/random/600x300/?room' width="400" height="300" alt=''>
+                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Recusandae nisi quidem sint eius quos corrupti, perferendis unde at. Ipsam saepe error, quos iste enim temporibus voluptatum ea harum inventore neque!</p>
+                    <img src='https://source.unsplash.com/random/600x300/?room' width="400" height="300" alt=''>
+                    <p>Aut dolor aspernatur cupiditate repudiandae eos accusantium inventore molestiae sequi earum perspiciatis qui odio minima magni, iste fugit reiciendis atque tenetur quaerat itaque incidunt, consequuntur esse. Accusantium doloribus odit debitis.</p>
+                </div>
             </div>
         </div>
+        
     {%endif%}
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
