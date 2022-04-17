@@ -7,6 +7,15 @@ Repository Size          |  Last Commit
 # RBR-SYSTEM
 A room booking platform or you can say app where only authenticated user can user this app.
 
+## Appendix
+
+- [Why RBR](https://github.com/iconicsudip/RBR-system#why-rbr-)
+- [Features](https://github.com/iconicsudip/RBR-system#why-rbr-)
+- [Installation](https://github.com/iconicsudip/RBR-system#installation)
+- [Run Locally](https://github.com/iconicsudip/RBR-system#run-locally)
+- [Credits](https://github.com/iconicsudip/RBR-system#credits)
+- [Acknowledgements](https://github.com/iconicsudip/RBR-system#acknowledgements)
+
 ## Why RBR ?
   Recently i watched a south indian movie __RRR__ and __RBR__ means __Room Book and Rebook__ so that's why i named this project as __RBR__.
 
