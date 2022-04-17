@@ -1,0 +1,52 @@
+.card-body {
+    text-align: center;
+}
+input{
+    padding: 0.3rem;
+    border: 1px solid #c7c1c1;
+    width: 20rem;
+}
+#gappointments_calendar_slots label.time_slot {
+    margin: 5px;
+    display: block;
+    border-radius: 3px;
+    background: #fff;
+    font-weight: normal;
+    font-size: inherit;
+    width: auto !important;
+    -webkit-transition: 0.2s ease-in-out;
+    -moz-transition: 0.2s ease-in-out;
+    -o-transition: 0.2s ease-in-out;
+    transition: 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+#gappointments_calendar_slots input.hidden_radio:checked + label.time_slot {
+    background: #1dd59a;
+    color: #fff;
+}
+input[type="radio"] {
+    vertical-align: text-bottom;
+    box-shadow: none;
+    background: none;
+}
+#gappointments_calendar_slots input.hidden_radio {
+    display: none;
+}
+.slot_small{
+    width: 10rem;
+}
+.grid_no_pad{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+.time_slot{
+    padding: 1rem;
+}
+.table{
+    background: rgba(0, 0, 0, 0.075);
+}

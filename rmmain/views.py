@@ -10,7 +10,6 @@ from datetime import date, datetime , timedelta,time
 
 # Create your views here.
 
-
 def home(request):
     if request.user.is_authenticated:
         try:
@@ -218,15 +217,13 @@ def bookroom(request,user,id,day=None,year=None,year1=None):
                 "11":"November",
                 "12":"December"
             }
-            booked = Booking.objects.filter(roomid=id)
+            booked = Booking.objects.filter(roomid=id).all()
             valid = "Yes"
             busy_slot = []
             for book in booked:
                 if(book.valid):
                     if(str(book.startdate)<=str(year)<=str(book.enddate)):
-                        if(str(year)==str(book.startdate) and str(year)==str(book.enddate)):
-                            pass
-                        elif(str(year)==str(book.enddate)):
+                        if(str(year)==str(book.enddate)):
                             check_time = set_time
                             while(str(check_time) < str(book.slotend)):
                                 t = (datetime(temp_date[0], temp_date[1],temp_date[2], check_time.hour, check_time.minute, check_time.second) + timedelta(hours=delay.slotrange)).time()
@@ -261,6 +258,9 @@ def check(request,id):
             if(request.POST.get('startdate') and request.POST.get('enddate')):
                 if(str(request.POST.get('startdate'))<str(date.today()) or str(request.POST.get('enddate'))<str(date.today())):
                     messages.error(request,"You can only book room from today not before today.")
+                    return redirect('bookroom',user=request.user,id=id)
+                elif(str(request.POST.get('startdate'))>str(request.POST.get('enddate'))):
+                    messages.error(request,"Booking end day must be that day or any future date")
                     return redirect('bookroom',user=request.user,id=id)
                 else:
                     stdt = request.POST.get('startdate')
