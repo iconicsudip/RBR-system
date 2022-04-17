@@ -28,8 +28,6 @@ A room booking platform or you can say app where only authenticated user can use
   - Well defined __Database__.
 
 
-
-
 ## Installation
   Here i will show you __two__ different method to download file locally.
   
@@ -96,6 +94,9 @@ To run locally and to do experience you have to do few steps
     ```
     It server will start on port __127.0.0.1:8000__ .
 
+## Passwords
+
+You can see __passwords.txt__ in project directory where you can get __Customer's__ and __Manager's__ __username__,__email__ and __password__.
 ## Credits
 
  - I used bootstrap5.0 for templates responsive [Bootstrap5](https://getbootstrap.com/docs/5.1/getting-started/introduction/)
